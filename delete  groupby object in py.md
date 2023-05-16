@@ -72,8 +72,8 @@ import pandas as pd
 
 # Modify the data
 data = [
-    {"name": "shubham", "age": "24", "company": "aCN"},
-    {"name": "arijit", "age": "27", "company": "aCN"}
+    {"name": "Ramesh", "age": "24", "company": "abc"},
+    {"name": "Suresh", "age": "27", "company": "abc"}
 ]
 
 # Create a DataFrame from the modified data
@@ -83,8 +83,8 @@ df = pd.DataFrame(data)
 grouped = df.groupby('company')
 
 # Delete a specific record from a group
-group_name = 'aCN'  # Specify the group name
-record_to_delete = 'arijit'  # Specify the record name
+group_name = 'abc'  # Specify the group name
+record_to_delete = 'Suresh'  # Specify the record name
 
 # Filter the group and drop the record
 grouped_filtered = grouped.get_group(group_name).drop(
@@ -97,7 +97,7 @@ print(grouped_filtered)
 
 In this example, we have modified the data to a list of dictionaries, where each dictionary represents a record. We then create a DataFrame `df` from the modified data.
 
-Next, we group the DataFrame by the 'company' column using `groupby()`. We specify the group name as 'aCN' and the record to delete as 'arijit'.
+Next, we group the DataFrame by the 'company' column using `groupby()`. We specify the group name as 'abc' and the record to delete as 'Suresh'.
 
 We filter the group using `get_group()` and then drop the record from the filtered group using `drop()` and passing the index of the record to delete.
 
