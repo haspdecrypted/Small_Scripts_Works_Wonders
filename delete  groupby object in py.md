@@ -62,3 +62,43 @@ In this example, we have a DataFrame `df` with two columns, 'Group' and 'Value'.
 We use the `groupby()` function to create groups based on the 'Group' column, and then we filter the group with the specified name using `get_group()`. We use the `drop()` function to remove the record from the filtered group by passing the index of the record we want to delete.
 
 Finally, we print the updated group `grouped_filtered`, which will not contain the specified record.
+
+For Example:
+
+Certainly! Here's an example of how you can modify your data and implement the same logic to delete a record from a group:
+
+```python
+import pandas as pd
+
+# Modify the data
+data = [
+    {"name": "shubham", "age": "24", "company": "aCN"},
+    {"name": "arijit", "age": "27", "company": "aCN"}
+]
+
+# Create a DataFrame from the modified data
+df = pd.DataFrame(data)
+
+# Group the DataFrame by 'company'
+grouped = df.groupby('company')
+
+# Delete a specific record from a group
+group_name = 'accenture'  # Specify the group name
+record_to_delete = 'arijit'  # Specify the record name
+
+# Filter the group and drop the record
+grouped_filtered = grouped.get_group(group_name).drop(
+    grouped.get_group(group_name)[grouped.get_group(group_name)['name'] == record_to_delete].index
+)
+
+# Print the updated group
+print(grouped_filtered)
+```
+
+In this example, we have modified the data to a list of dictionaries, where each dictionary represents a record. We then create a DataFrame `df` from the modified data.
+
+Next, we group the DataFrame by the 'company' column using `groupby()`. We specify the group name as 'accenture' and the record to delete as 'arijit'.
+
+We filter the group using `get_group()` and then drop the record from the filtered group using `drop()` and passing the index of the record to delete.
+
+Finally, we print the updated group `grouped_filtered`, which will no longer contain the specified record.
