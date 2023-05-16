@@ -102,3 +102,46 @@ Next, we group the DataFrame by the 'company' column using `groupby()`. We speci
 We filter the group using `get_group()` and then drop the record from the filtered group using `drop()` and passing the index of the record to delete.
 
 Finally, we print the updated group `grouped_filtered`, which will no longer contain the specified record.
+
+<h3>Updated for same datatype</h3>
+
+Apologies for the confusion. If you want to keep the data type of `grouped_filtered` the same as `grouped`, you can use the `filter()` function instead of `drop()`. The `filter()` function retains the rows that satisfy a given condition. Here's the modified code:
+
+```python
+import pandas as pd
+
+# Modify the data
+data = [
+    {"name": "shubham", "age": "24", "company": "accenture"},
+    {"name": "arijit", "age": "27", "company": "accenture"}
+]
+
+# Create a DataFrame from the modified data
+df = pd.DataFrame(data)
+
+# Group the DataFrame by 'company'
+grouped = df.groupby('company')
+
+# Delete a specific record from a group
+group_name = 'accenture'  # Specify the group name
+record_to_delete = 'arijit'  # Specify the record name
+
+# Define a filter function
+def filter_group(group):
+    return group[group['name'] != record_to_delete]
+
+# Apply the filter function to the group
+grouped_filtered = grouped.apply(filter_group)
+
+# Remove the grouping index from the resulting DataFrame
+grouped_filtered.reset_index(drop=True, inplace=True)
+
+# Print the updated group
+print(grouped_filtered)
+```
+
+In this updated code, the `filter_group()` function takes a group as input and applies the filter condition to retain only the rows where the name is not equal to the record you want to delete.
+
+We use the `apply()` function to apply the `filter_group()` function to each group in `grouped`, resulting in a new DataFrame `grouped_filtered` that retains the original group structure.
+
+Finally, we use `reset_index()` to remove the grouping index from `grouped_filtered` and print the updated group. Now, `grouped_filtered` will have the same data type as `grouped`.
