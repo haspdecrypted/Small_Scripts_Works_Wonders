@@ -30,6 +30,7 @@ except NameError as e:
 
 In this example, we create a DataFrame `df` and group it by the 'Group' column to create a groupby object `grouped`. We then perform some operations on the grouped data, calculating the mean values. Finally, we delete the reference to `grouped` using `del grouped`. Attempting to access `grouped` after deletion will raise a `NameError`, confirming that the object has been deleted.
 
+<h3> delete single record by record from group by</h3>
 If you want to delete a single record from a specific group in a pandas DataFrame, you can use the `groupby()` function to create groups and then apply different operations to each group. To delete a specific record from a group, you can use the `drop()` function. Here's an example:
 
 ```python
