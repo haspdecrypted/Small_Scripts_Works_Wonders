@@ -274,3 +274,210 @@ In this example, we're using Kafka Streams to process orders and aggregate them 
 Please make sure to update the Maven dependencies (`pom.xml`) with the necessary Kafka Streams dependencies.
 
 Remember that this is a basic example, and you can further customize it to fit your specific requirements and add necessary error handling.
+
+# quarkus 
+
+Sure, I can provide you with a simplified example using Quarkus and Kafka Streams to achieve the desired functionality. Please note that this example might require adjustments to fully fit your project structure and requirements.
+
+Here's how you can structure your Quarkus project:
+
+```
+quarkus-kafka-streams-order-management/
+├─ src/
+│   ├─ main/
+│   │   ├─ java/
+│   │   │   ├─ org/
+│   │   │   │   ├─ example/
+│   │   │   │   │   ├─ OrderService.java
+│   │   │   │   │   ├─ UserService.java
+│   │   │   │   │   ├─ UserOrdersService.java
+│   │   │   │   │   ├─ model/
+│   │   │   │   │   │   ├─ Order.java
+│   │   │   │   │   │   ├─ User.java
+├─ pom.xml
+```
+
+Let's break down the parts:
+
+1. **Order.java:** A simple model class representing an order.
+
+```java
+package org.example.model;
+
+public class Order {
+    private String refNumber;
+    private String orderDetails;
+    private String userSSN;
+
+    // Getters and setters
+}
+```
+
+2. **User.java:** A simple model class representing a user.
+
+```java
+package org.example.model;
+
+public class User {
+    private String ssn;
+    private String name;
+    private String surname;
+
+    // Getters and setters
+}
+```
+
+3. **OrderService.java:** Service to handle order-related operations.
+
+```java
+package org.example;
+
+import io.quarkus.kafka.client.serialization.JsonbSerde;
+import org.apache.kafka.common.serialization.Serdes;
+import org.eclipse.microprofile.reactive.messaging.Outgoing;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import org.apache.kafka.streams.kstream.KStream;
+
+@ApplicationScoped
+public class OrderService {
+
+    @Inject
+    KafkaStreamsBuilder kafkaStreamsBuilder;
+
+    @Outgoing("orders-out")
+    public KStream<String, Order> produceOrderStream() {
+        JsonbSerde<Order> orderSerde = new JsonbSerde<>(Order.class);
+        return kafkaStreamsBuilder.getKStreamBuilder().stream("Orders", Consumed.with(Serdes.String(), orderSerde));
+    }
+}
+```
+
+4. **UserService.java:** Service to handle user-related operations.
+
+```java
+package org.example;
+
+import io.quarkus.kafka.client.serialization.JsonbSerde;
+import org.apache.kafka.common.serialization.Serdes;
+import org.eclipse.microprofile.reactive.messaging.Outgoing;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import org.apache.kafka.streams.kstream.KStream;
+
+@ApplicationScoped
+public class UserService {
+
+    @Inject
+    KafkaStreamsBuilder kafkaStreamsBuilder;
+
+    @Outgoing("users-out")
+    public KStream<String, User> produceUserStream() {
+        JsonbSerde<User> userSerde = new JsonbSerde<>(User.class);
+        return kafkaStreamsBuilder.getKStreamBuilder().stream("Users", Consumed.with(Serdes.String(), userSerde));
+    }
+}
+```
+
+5. **UserOrdersService.java:** Service to process user orders using Kafka Streams.
+
+```java
+package org.example;
+
+import io.quarkus.kafka.client.serialization.JsonbSerde;
+import org.apache.kafka.common.serialization.Serdes;
+import org.eclipse.microprofile.reactive.messaging.Outgoing;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Materialized;
+
+@ApplicationScoped
+public class UserOrdersService {
+
+    @Inject
+    KafkaStreamsBuilder kafkaStreamsBuilder;
+
+    @Inject
+    OrderService orderService;
+
+    @Inject
+    UserService userService;
+
+    @Outgoing("user-orders-out")
+    public KStream<String, String> produceUserOrdersStream() {
+        JsonbSerde<String> stringSerde = new JsonbSerde<>(String.class);
+
+        KStream<String, Order> orderStream = orderService.produceOrderStream();
+        KStream<String, User> userStream = userService.produceUserStream();
+
+        // Process and join the streams to create user-orders information
+        // For simplicity, let's assume you're creating a JSON representation of user-orders
+
+        return joinedStream
+            .toStream()
+            .to("UserOrders", Produced.with(Serdes.String(), stringSerde));
+
+    }
+}
+```
+
+6. **KafkaStreamsBuilder.java:** A helper class to build Kafka Streams configuration.
+
+```java
+package org.example;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
+
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.StreamsBuilder;
+
+@ApplicationScoped
+public class KafkaStreamsBuilder {
+
+    @Produces
+    public StreamsBuilder getKStreamBuilder() {
+        return new StreamsBuilder();
+    }
+
+    @Produces
+    public KafkaStreams buildKafkaStreams(StreamsBuilder builder) {
+        // Build and configure KafkaStreams instance
+        // Configure streams as needed
+
+        return new KafkaStreams(builder.build(), streamsConfig);
+    }
+}
+```
+
+7. **pom.xml:** Update your Quarkus dependencies to include the Kafka Streams extension and relevant libraries.
+
+```xml
+<!-- Add the Kafka Streams extension -->
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-kafka-streams</artifactId>
+</dependency>
+
+<!-- Add other necessary dependencies -->
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
+</dependency>
+
+<!-- Add JSON-B and other dependencies -->
+<dependency>
+    <groupId>javax.json.bind</groupId>
+    <artifactId>javax.json.bind-api</artifactId>
+    <version>1.0</version>
+</dependency>
+```
+
+Please note that this is a simplified example to illustrate the structure of a Quarkus project using Kafka Streams for your use case. You would need to further customize and complete the logic for joining and processing streams based on your specific requirements. Additionally, remember to configure Kafka and Quarkus properties accordingly.
