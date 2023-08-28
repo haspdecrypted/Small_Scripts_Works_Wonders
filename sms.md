@@ -176,7 +176,7 @@ public class OrderProcessor {
 
 Please note that the Java code provided here is meant to give you a general idea of how to implement the solution using the Kafka Java API. You would need to add proper error handling, serialization/deserialization, and a way to aggregate user orders based on your specific use case.
 
-#project structure
+# project structure
 
 Certainly! Here's a simple project structure for the Kafka solution in Java:
 
