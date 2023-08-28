@@ -77,7 +77,7 @@ consumer.close()
 
 Please note that this example provides a simplified overview and may require adjustments based on your specific use case and environment. Additionally, proper error handling, serialization/deserialization, and partitioning strategies should be implemented for a production-level system.
 
-#Java one
+# Java one
 
 Certainly! Here's how you can implement the solution using Java and the Kafka Java API. This example assumes you have Kafka libraries properly set up in your Java project.
 
