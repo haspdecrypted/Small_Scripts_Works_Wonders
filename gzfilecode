@@ -1,0 +1,39 @@
+from pyspark.sql import SparkSession
+import gzip
+import json
+
+# Initialize Spark Session
+spark = SparkSession.builder \
+    .appName("Read gzipped JSON and Run SQL") \
+    .getOrCreate()
+
+# Path to the local file
+file_path = "path/to/your/file.xyz.gz"
+
+# Read the .gz file and decompress it
+def read_gz_file(file_path):
+    with gzip.open(file_path, 'rt') as gz_file:
+        return [json.loads(line) for line in gz_file]
+
+# Load the decompressed data into a Spark DataFrame
+data = read_gz_file(file_path)
+df = spark.createDataFrame(data)
+
+# Register the DataFrame as a temporary SQL table
+df.createOrReplaceTempView("my_table")
+
+# Example SQL query
+query = """
+SELECT * 
+FROM my_table
+WHERE <your_condition>
+"""
+
+# Run the query
+result_df = spark.sql(query)
+
+# Show the result
+result_df.show()
+
+# Stop the Spark session
+spark.stop()
